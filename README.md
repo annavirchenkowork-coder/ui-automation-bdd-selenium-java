@@ -9,16 +9,20 @@ This framework is designed for practicing and demonstrating professional QA engi
 ## 📂 Project Structure
 src
 ├── main
-│    └── java/util
-│         ├── Driver.java              # WebDriver manager (singleton)
-│         ├── ConfigurationReader.java # Reads from config.properties
-│         └── BrowserUtil.java         # Common Selenium utilities
+│    └── java
+│         └── util
+│              ├── Driver.java              # WebDriver manager (singleton)
+│              ├── ConfigurationReader.java # Reads config.properties
+│              └── BrowserUtil.java         # Common Selenium utilities
 │
 └── test
-├── java/pages                    # Page Object Models
-├── java/runner                   # Test runners
-├── java/steps                    # Step definitions
-└── resources/features            # Gherkin feature files
+├── java
+│    ├── pages   # Page Object Models
+│    ├── runner  # Test runners
+│    └── steps   # Step definitions
+│
+└── resources
+└── features # Gherkin feature files
 ---
 
 ## ⚙️ Tech Stack
