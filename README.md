@@ -67,9 +67,3 @@ I’m passionate about building reliable automation frameworks and continuously 
 
 🔗 LinkedIn | GitHub Profile
 
----
-
-✨ Paste this into your `README.md` at the **root** of the repo (not inside `src`).  
-When recruiters open your repo, they’ll immediately see something clean and professional.  
-
-Want me to also create a **badge section** (like Java version + build status from GitHub Actions)? It adds a really polished “open-source” feel.
