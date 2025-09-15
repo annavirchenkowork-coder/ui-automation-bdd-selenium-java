@@ -51,28 +51,33 @@ Feature: Login
     Given the user is on the login page
     When the user enters valid credentials
     Then the user should see the dashboard
+```
 
 ▶️ How to Run
 
 Run tests from the terminal:
 
-```mvn clean test```
+`mvn clean test`
+
 Or run via Cucumber runner inside your IDE.
 
-📌 Future Improvements
-	•	Add reporting (Extent / Allure)
-	•	Add API testing layer with Rest-Assured
-	•	Add DB validation with JDBC
-	•	Expand CI pipeline (parallel execution, test reports)
+---
 
+📌 Future Improvements
+
+- Add reporting (Extent / Allure)  
+- Add API testing layer with Rest-Assured  
+- Add DB validation with JDBC  
+- Expand CI pipeline (parallel execution, test reports)  
+
+---
 
 👩‍💻 About Me
 
-Hi, I’m Anna (Netta) Virchenko – QA Engineer in Test.
+Hi, I’m **Anna (Netta) Virchenko** – QA Engineer in Test.
 I’m passionate about building reliable automation frameworks and continuously improving software quality.
 
-🔗 Links
-![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue)](https://www.linkedin.com/in/anna-virchenko-work)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Profile-blue)](https://www.linkedin.com/in/anna-virchenko-work)
 [![GitHub](https://img.shields.io/badge/GitHub-Profile-black)](https://github.com/annavirchenkowork-coder)
 
 
