@@ -7,6 +7,7 @@ This framework is designed for practicing and demonstrating professional QA engi
 ---
 
 ## 📂 Project Structure
+```
 src
 ├── main
 │    └── java
@@ -23,6 +24,7 @@ src
 │
 └── resources
 └── features # Gherkin feature files
+```
 ---
 
 ## ⚙️ Tech Stack
@@ -47,7 +49,8 @@ Feature: Login
 ▶️ How to Run
 
 Run tests from the terminal:
-mvn clean test
+
+```mvn clean test```
 Or run via Cucumber runner inside your IDE.
 
 📌 Future Improvements
