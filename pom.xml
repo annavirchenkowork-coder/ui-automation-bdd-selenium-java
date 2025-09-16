@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.netta.qa</groupId>
     <artifactId>ui-automation-bdd-selenium-java</artifactId>
     <version>1.0.0</version>
@@ -12,15 +14,18 @@
         <cucumber.version>7.18.1</cucumber.version>
         <selenium.version>4.23.0</selenium.version>
         <junit.version>5.10.2</junit.version>
+        <surefire.version>3.2.5</surefire.version>
     </properties>
 
     <dependencies>
+        <!-- Selenium (includes Selenium Manager since 4.6+) -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
         </dependency>
 
+        <!-- Cucumber + JUnit Platform -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
@@ -34,31 +39,50 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>5.9.2</version>
-        </dependency>
-
+        <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- JUnit Platform suite annotations: @Suite, @SelectClasspathResource, @ConfigurationParameter -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>1.10.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--  simple logging to console for debugging -->
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+          <version>2.0.13</version>
+          <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Run JUnit 5+Cucumber on mvn test -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>${surefire.version}</version>
                 <configuration>
+                    <!-- helpful when mixing JDK 17 + modules -->
+                    <useModulePath>false</useModulePath>
+
+                    <!-- run runners and/or *Test* classes -->
                     <includes>
-                        <include>**/*Test*.java</include>
                         <include>**/*Runner*.java</include>
+                        <include>**/*Test*.java</include>
                     </includes>
+
+                    <!-- basic Cucumber output (you can add json/pretty/etc) -->
                     <systemPropertyVariables>
                         <cucumber.plugin>pretty,html:target/cucumber-report.html</cucumber.plugin>
                     </systemPropertyVariables>
