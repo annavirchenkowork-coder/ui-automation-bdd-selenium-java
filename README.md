@@ -62,6 +62,15 @@ Run tests from the terminal:
 Or run via Cucumber runner inside your IDE.
 
 ---
+## 📊 Test Reports
+
+After running the tests, reports are generated under the `target/` folder:
+
+- **HTML Report:** `target/cucumber-report.html`  
+- **JSON Report (for integrations):** `target/cucumber-report.json`  
+- **JUnit XML Report (for CI/CD):** `target/cucumber-report.xml`
+  
+---
 
 📌 Future Improvements
 
