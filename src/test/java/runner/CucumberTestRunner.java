@@ -6,7 +6,7 @@ import org.junit.platform.suite.api.Suite;
 
 import static io.cucumber.junit.platform.engine.Constants.GLUE_PROPERTY_NAME;
 import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
-import static io.cucumber.junit.platform.engine.Constants.FEATURES_PROPERTY_NAME;
+import static io.cucumber.junit.platform.engine.Constants.FILTER_TAGS_PROPERTY_NAME;
 
 @Suite
 @SelectClasspathResource("features")
@@ -15,4 +15,6 @@ import static io.cucumber.junit.platform.engine.Constants.FEATURES_PROPERTY_NAME
         key = PLUGIN_PROPERTY_NAME,
         value = "pretty, summary, rerun:target/rerun.txt"
 )
+
+@ConfigurationParameter(key = FILTER_TAGS_PROPERTY_NAME, value = "")
 public class CucumberTestRunner { }
