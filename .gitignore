@@ -7,11 +7,16 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+# Cucumber reports
+*.html
+*.json
+*.xml
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml
-.idea/libraries/
+.idea/libraries
 *.iws
 *.iml
 *.ipr
