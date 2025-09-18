@@ -90,6 +90,15 @@ Reports are generated under the target/ folder:
 - **Rerun file (failed scenarios):** target/rerun.txt
 
 ---
+## 📊 Test Reports
+
+After running the tests, reports are generated under the `target/` folder:
+
+- **HTML Report:** `target/cucumber-report.html`  
+- **JSON Report (for integrations):** `target/cucumber-report.json`  
+- **JUnit XML Report (for CI/CD):** `target/cucumber-report.xml`
+  
+---
 
 ## 📌 Future Improvements
 
