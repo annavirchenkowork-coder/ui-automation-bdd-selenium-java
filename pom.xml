@@ -9,37 +9,51 @@
     <version>1.0.0</version>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <cucumber.version>7.18.1</cucumber.version>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <selenium.version>4.23.0</selenium.version>
         <junit.version>5.10.2</junit.version>
         <surefire.version>3.2.5</surefire.version>
+        <slf4j.version>2.0.13</slf4j.version>
+
+        <cucumber.version>7.18.1</cucumber.version>
     </properties>
 
+    <!-- Lock all Cucumber modules to a compatible set -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-bom</artifactId>
+                <version>${cucumber.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
-        <!-- Selenium (includes Selenium Manager since 4.6+) -->
+        <!-- Selenium (includes Selenium Manager) -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>${selenium.version}</version>
         </dependency>
 
-        <!-- Cucumber + JUnit Platform -->
+        <!-- Cucumber + JUnit Platform engine (versions come from the BOM) -->
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
-            <version>${cucumber.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit-platform-engine</artifactId>
-            <version>${cucumber.version}</version>
             <scope>test</scope>
         </dependency>
 
-        <!-- JUnit 5 -->
+        <!-- JUnit 5 API (helpful for IDE / direct tests) -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -55,39 +69,135 @@
             <scope>test</scope>
         </dependency>
 
-        <!--  simple logging to console for debugging -->
+        <!-- PrettyReports runtime plugin -->
         <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-simple</artifactId>
-          <version>2.0.13</version>
-          <scope>test</scope>
+            <groupId>me.jvt.cucumber</groupId>
+            <artifactId>reporting-plugin</artifactId>
+            <version>7.11.0</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.cucumber</groupId>
+                    <artifactId>gherkin</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
+        <!-- Simple logging to console -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <!-- Run JUnit 5+Cucumber on mvn test -->
+            <!-- Compile with Java 17 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                </configuration>
+            </plugin>
+
+            <!-- Run tests on the JUnit Platform (Cucumber engine) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
                 <configuration>
-                    <!-- helpful when mixing JDK 17 + modules -->
                     <useModulePath>false</useModulePath>
-
-                    <!-- run runners and/or *Test* classes -->
                     <includes>
                         <include>**/*Runner*.java</include>
+                        <include>**/*Suite*.java</include>
                         <include>**/*Test*.java</include>
                     </includes>
-
-                    <!-- basic Cucumber output (you can add json/pretty/etc) -->
-                    <systemPropertyVariables>
-                        <cucumber.plugin>pretty,html:target/cucumber-report.html</cucumber.plugin>
-                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <!-- Run common modes without editing files -->
+    <profiles>
+        <!-- Run only @smoke -->
+        <profile>
+            <id>smoke</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <cucumber.filter.tags>@smoke</cucumber.filter.tags>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Run only @regression -->
+        <profile>
+            <id>regression</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <cucumber.filter.tags>@regression</cucumber.filter.tags>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Dry run (check step bindings only) -->
+        <profile>
+            <id>dry-run</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <cucumber.execution.dry-run>true</cucumber.execution.dry-run>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Re-run only failed scenarios from target/rerun.txt -->
+        <profile>
+            <id>rerun</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${surefire.version}</version>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <cucumber.features>@target/rerun.txt</cucumber.features>
+                                <cucumber.plugin>pretty, summary, html:target/cucumber-reports-rerun.html, me.jvt.cucumber.report.PrettyReports:target/cucumber-rerun</cucumber.plugin>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

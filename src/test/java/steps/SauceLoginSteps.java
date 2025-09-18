@@ -41,7 +41,6 @@ public class SauceLoginSteps {
         Assertions.assertTrue(ok, "Expected to be on Products page.");
     }
 
-    // Optional negative step if you add a scenario outline for invalid creds:
     @When("the user logs in with username {string} and password {string}")
     public void login_with_params(String username, String password) {
         loginPage.enterUsername(username);

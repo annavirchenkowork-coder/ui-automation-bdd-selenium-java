@@ -6,9 +6,9 @@
 [![JUnit](https://img.shields.io/badge/JUnit-5-red.svg)](https://junit.org/junit5/)
 [![CI/CD](https://img.shields.io/badge/GitHub-Actions-blue.svg)](https://docs.github.com/en/actions)
 
-🚀 A Behavior-Driven Development (BDD) style test automation framework built with **Java, Selenium WebDriver, Cucumber, JUnit**, and **GitHub Actions CI/CD**.  
+🚀 A **Behavior-Driven Development (BDD)** style test automation framework built with **Java, Selenium WebDriver, Cucumber, JUnit 5**, and **GitHub Actions CI/CD**.
 
-This framework is designed for practicing and demonstrating professional QA engineering skills, including page object modeling, reusable utilities, and feature-file driven testing.
+This framework demonstrates **Page Object Modeling**, **reusable utilities**, and **feature-driven testing** with rich reporting.
 
 ---
 
@@ -16,11 +16,11 @@ This framework is designed for practicing and demonstrating professional QA engi
 ```
 src
 ├── main
-│    └── java
-│         └── util
-│              ├── Driver.java              # WebDriver manager (singleton)
-│              ├── ConfigurationReader.java # Reads config.properties
-│              └── BrowserUtil.java         # Common Selenium utilities
+│   └── java
+│        └── util
+│             ├── Driver.java              # WebDriver manager (singleton)
+│             ├── ConfigurationReader.java # Reads config.properties
+│             └── BrowserUtil.java         # Common Selenium utilities
 │
 └── test
 ├── java
@@ -29,37 +29,65 @@ src
 │    └── steps   # Step definitions
 │
 └── resources
-└── features # Gherkin feature files
+├── features            # Gherkin feature files
+│    ├── login_saucedemo.feature
+│    ├── sort_products_saucedemo.feature
+│    ├── cart_checkout_saucedemo.feature
+│    ├── cura_appointment.feature
+│    ├── parabank_login.feature
+│    └── parabank_transfer.feature
+│
+├── config.properties
+└── junit-platform.properties
 ```
 ---
 
 ## ⚙️ Tech Stack
-- **Language:** Java 17  
-- **Build Tool:** Maven  
-- **UI Testing:** Selenium WebDriver  
-- **BDD:** Cucumber (Gherkin syntax)  
-- **Assertions:** JUnit  
-- **CI/CD:** GitHub Actions  
+- **Language:** Java 17
+- **Build Tool:** Maven
+- **UI Testing:** Selenium WebDriver
+- **BDD:** Cucumber (Gherkin syntax)
+- **Assertions:** JUnit 5
+- **CI/CD:** GitHub Actions
 
 ---
 
-## 📝 Sample Feature (Login)
-```gherkin
-Feature: Login
+## 📝 Features
+Some of the currently automated flows:
+- 🔐 **SauceDemo Login & Sorting**
+- 🛒 **SauceDemo Cart & Checkout**
+- 🏥 **CURA Appointment Booking**
+- 🏦 **Parabank Login & Money Transfer**
 
-  Scenario: Successful login with valid credentials
-    Given the user is on the login page
-    When the user enters valid credentials
-    Then the user should see the dashboard
-```
 
-▶️ How to Run
+## ▶️ How to Run
 
 Run tests from the terminal:
-
-`mvn clean test`
-
+```bash 
+    mvn clean test
+```
+Run with tags (e.g., smoke, regression):
+```bash
+    mvn clean test -Psmoke
+    mvn clean test -Pregression
+```
+Run dry-run mode (step binding check only):
+```bash
+    mvn clean test -Pdry-run
+```
+Re-run failed scenarios:
+```bash
+    mvn clean test -Prerun
+```
 Or run via Cucumber runner inside your IDE.
+
+---
+## 📊 Test Reports
+
+Reports are generated under the target/ folder:
+- **HTML Report:** target/cucumber-reports.html
+- **PrettyReports (rich dashboard):** target/cucumber/
+- **Rerun file (failed scenarios):** target/rerun.txt
 
 ---
 ## 📊 Test Reports
@@ -72,16 +100,15 @@ After running the tests, reports are generated under the `target/` folder:
   
 ---
 
-📌 Future Improvements
+## 📌 Future Improvements
 
-- Add reporting (Extent / Allure)  
-- Add API testing layer with Rest-Assured  
-- Add DB validation with JDBC  
-- Expand CI pipeline (parallel execution, test reports)  
+- Add API testing with Rest-Assured
+- Add DB validation with JDBC
+- Expand CI pipeline (parallel execution, richer reporting)
 
 ---
 
-👩‍💻 About Me
+## 👩‍💻 About Me
 
 Hi, I’m **Anna (Netta) Virchenko** – QA Engineer in Test.
 I’m passionate about building reliable automation frameworks and continuously improving software quality.
