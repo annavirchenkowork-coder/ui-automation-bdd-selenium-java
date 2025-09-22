@@ -4,6 +4,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import util.ConfigurationReader;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class HomePage {
     private final WebDriver driver;
 
@@ -28,5 +31,11 @@ public class HomePage {
 
     public String cartBadgeText() {
         return driver.findElement(cartQty).getText().trim();
+    }
+
+    public int cartBadgeCount() {
+        String t = cartBadgeText(); // "(2)" or "(0)"
+        Matcher m = Pattern.compile("\\((\\d+)\\)").matcher(t);
+        return m.find() ? Integer.parseInt(m.group(1)) : 0;
     }
 }
