@@ -4,6 +4,7 @@ import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.*;
+
 import java.time.Duration;
 import java.util.List;
 
@@ -25,8 +26,7 @@ public class NopCartSteps {
         String baseUrl = ConfigurationReader.getProperty("baseUrl.nop");
         home.open(baseUrl);
 
-        new WebDriverWait(driver, Duration.ofSeconds(6))
-                .until(d -> driver.getTitle().toLowerCase().contains("nopcommerce demo store"));
+        new WebDriverWait(driver, Duration.ofSeconds(6)).until(d -> driver.getTitle().toLowerCase().contains("nopcommerce"));
     }
 
     @When("the user opens the {string} category")
@@ -36,16 +36,23 @@ public class NopCartSteps {
 
     @When("the user adds products {string} and {string} to the cart")
     public void add_two(String p1, String p2) {
+        int start = home.cartBadgeCount();
+
         category.addProductByName(p1);
+        waitForCartCount(start + 1);
+
         category.addProductByName(p2);
+        waitForCartCount(start + 2);
+    }
+
+    private void waitForCartCount(int expected) {
         new WebDriverWait(driver, Duration.ofSeconds(8))
-            .until(d -> home.cartBadgeText().contains("(2)"));
+                .until(d -> home.cartBadgeCount() == expected);
     }
 
     @Then("the cart badge should show {string}")
     public void badge_should_show(String count) {
-        String badge = home.cartBadgeText();
-        Assertions.assertEquals("(" + count + ")", badge, "Cart badge mismatch");
+        Assertions.assertEquals(Integer.parseInt(count), home.cartBadgeCount(), "Cart badge mismatch");
     }
 
     @When("the user opens the cart")
