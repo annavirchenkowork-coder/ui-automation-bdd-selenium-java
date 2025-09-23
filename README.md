@@ -48,6 +48,14 @@ src
 - **CI/CD:** GitHub Actions
 
 ---
+## 🌟 Framework Highlights
+- **Page Object Model (POM)** for clean separation of concerns
+- **Configuration-driven** (config.properties) for URLs, credentials, and browser setup
+- **Driver utility** for centralized WebDriver lifecycle management
+- **Reusable utilities** (BrowserUtil) for common Selenium helpers
+- **Screenshot capture on failures** (via Cucumber Hooks) automatically attaches screenshots to reports and saves locally
+- **Tag-based execution** (smoke, regression, dry-run, rerun) for flexible test runs
+---
 
 ## 📝 Features
 **Some of the currently automated flows:**
