@@ -32,10 +32,7 @@ src
 ├── features            # Gherkin feature files
 │    ├── login_saucedemo.feature
 │    ├── sort_products_saucedemo.feature
-│    ├── cart_checkout_saucedemo.feature
-│    ├── cura_appointment.feature
-│    ├── parabank_login.feature
-│    └── parabank_transfer.feature
+│    ├── books_cart.feature   # nopCommerce add-to-cart feature
 │
 ├── config.properties
 └── junit-platform.properties
@@ -53,9 +50,11 @@ src
 ---
 
 ## 📝 Features
-Some of the currently automated flows:
+**Some of the currently automated flows:**
 - 🔐 **SauceDemo Login & Sorting**
-- 🛒 **SauceDemo Cart & Checkout**
+- 🛒 **nopCommerce Books – Add to Cart & Cart Validation** 
+
+**Upcoming features (in progress 🚧):**
 - 🏥 **CURA Appointment Booking**
 - 🏦 **Parabank Login & Money Transfer**
 
@@ -80,14 +79,6 @@ Re-run failed scenarios:
     mvn clean test -Prerun
 ```
 Or run via Cucumber runner inside your IDE.
-
----
-## 📊 Test Reports
-
-Reports are generated under the target/ folder:
-- **HTML Report:** target/cucumber-reports.html
-- **PrettyReports (rich dashboard):** target/cucumber/
-- **Rerun file (failed scenarios):** target/rerun.txt
 
 ---
 ## 📊 Test Reports
