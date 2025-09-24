@@ -3,6 +3,7 @@ package pages.sauce;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import util.BrowserUtil;
 
 public class LoginPage {
     private final WebDriver driver;
@@ -29,9 +30,7 @@ public class LoginPage {
     }
 
     public String getErrorText() {
-        return driver.findElements(errorMsg).isEmpty()
-                ? ""
-                : driver.findElement(errorMsg).getText().trim();
+        return BrowserUtil.safeGetText(driver, errorMsg);
     }
 }
 
