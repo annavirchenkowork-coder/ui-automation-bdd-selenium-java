@@ -3,7 +3,6 @@ package pages.sauce;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import util.BrowserUtil;
 
 public class LoginPage {
     private final WebDriver driver;
@@ -15,7 +14,6 @@ public class LoginPage {
     private final By password = By.id("password");
     private final By loginBtn = By.id("login-button");
     private final By productsTitle = By.cssSelector(".title"); // text: "Products"
-    private final By errorMsg = By.cssSelector("[data-test='error']");
 
     // Actions
     public void open(String url) { driver.get(url); }
@@ -27,10 +25,6 @@ public class LoginPage {
     public boolean isProductsPage() {
         WebElement title = driver.findElement(productsTitle);
         return title.isDisplayed() && "Products".equalsIgnoreCase(title.getText().trim());
-    }
-
-    public String getErrorText() {
-        return BrowserUtil.safeGetText(driver, errorMsg);
     }
 }
 
