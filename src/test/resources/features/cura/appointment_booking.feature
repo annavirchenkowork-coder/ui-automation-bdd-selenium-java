@@ -12,14 +12,14 @@ Feature: Book an appointment on CURA Healthcare Service
       | facility         | Hongkong CURA Healthcare Center |
       | applyReadmission | true                            |
       | program          | Medicaid                        |
-      | visitDate        | 05/10/2025                      |
+      | visitDate        | 2025-10-05                      |
       | comment          | Automation booking via Cucumber |
     And the user submits the appointment
     Then the confirmation page should show:
       | facility         | Hongkong CURA Healthcare Center |
       | applyReadmission | Yes                             |
       | program          | Medicaid                        |
-      | visitDate        | 05/10/2025                      |
+      | visitDate        | 2025-10-05                      |
       | comment          | Automation booking via Cucumber |
 
   @validation

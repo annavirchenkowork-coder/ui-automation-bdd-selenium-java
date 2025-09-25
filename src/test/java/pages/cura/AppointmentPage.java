@@ -10,6 +10,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 
+import static util.BrowserUtil.clickWithJS;
+
 public class AppointmentPage {
     private final WebDriver driver;
 
@@ -80,7 +82,7 @@ public class AppointmentPage {
     }
 
     public void submit() {
-        BrowserUtil.waitForClickability(BTN_BOOK, 8).click();
+        clickWithJS(driver.findElement(BTN_BOOK));
     }
 
     /** Convenience for the datatable-driven step. */
