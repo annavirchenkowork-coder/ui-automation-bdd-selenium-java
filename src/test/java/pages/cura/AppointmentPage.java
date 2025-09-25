@@ -6,6 +6,8 @@ import util.BrowserUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Map;
 
 public class AppointmentPage {
@@ -20,6 +22,10 @@ public class AppointmentPage {
     private static final By TXT_VISIT_DATE = By.id("txt_visit_date");           // expects dd/MM/yyyy
     private static final By TXT_COMMENT    = By.id("txt_comment");
     private static final By BTN_BOOK       = By.id("btn-book-appointment");
+
+    private static final DateTimeFormatter ISO_YMD   = DateTimeFormatter.ISO_LOCAL_DATE;      // 2025-10-05
+    private static final DateTimeFormatter DMY_SLASH = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DM_SLASH  = DateTimeFormatter.ofPattern("d/M/yyyy");
 
     public AppointmentPage(WebDriver driver) {
         this.driver = driver;
@@ -52,15 +58,20 @@ public class AppointmentPage {
         BrowserUtil.waitForClickability(loc, 8).click();
     }
 
+    private LocalDate parseFlexibleDate(String s) {
+        for (DateTimeFormatter f : List.of(ISO_YMD, DMY_SLASH, DM_SLASH)) {
+            try { return LocalDate.parse(s, f); } catch (DateTimeParseException ignored) {}
+        }
+        throw new IllegalArgumentException("Unsupported date format: " + s + " (use yyyy-MM-dd or dd/MM/yyyy)");
+    }
+
     /** Accepts YYYY-MM-DD and types dd/MM/yyyy as required by the UI. */
-    public void setVisitDateFromYmd(String yyyyMmDd) {
+    public void setVisitDate(String dateStr) {
         WebElement date = driver.findElement(TXT_VISIT_DATE);
         date.clear();
-        if (yyyyMmDd != null && !yyyyMmDd.isBlank()) {
-            LocalDate d = LocalDate.parse(yyyyMmDd, DateTimeFormatter.ISO_LOCAL_DATE);
-            String ddMMyyyy = d.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            date.sendKeys(ddMMyyyy);
-        }
+        if (dateStr == null || dateStr.isBlank()) return;
+        LocalDate d = parseFlexibleDate(dateStr.trim());
+        date.sendKeys(d.format(DMY_SLASH));
     }
 
     public void setComment(String comment) {
@@ -77,7 +88,7 @@ public class AppointmentPage {
         selectFacility(data.get("facility"));
         setReadmission(parseBool(data.get("applyReadmission")));
         chooseProgram(data.get("program"));
-        setVisitDateFromYmd(data.get("visitDate"));
+        setVisitDate(data.get("visitDate"));
         setComment(data.get("comment"));
     }
 
