@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import util.BrowserUtil;
 import util.ConfigurationReader;
 
 import java.time.Duration;
@@ -39,6 +40,7 @@ public class HomePage {
     /** Navigate to the nopCommerce home page. */
     public void open() {
         driver.get(baseUrl);
+        BrowserUtil.waitForPageToLoad(5);
     }
 
     /**
@@ -49,6 +51,7 @@ public class HomePage {
     public void openCategory(String name) {
         if ("Books".equalsIgnoreCase(name)) {
             driver.get(baseUrl + "books");
+            BrowserUtil.waitForPageToLoad(5);
             wait.until(ExpectedConditions.urlContains("/books"));
         } else {
             wait.until(ExpectedConditions.elementToBeClickable(By.linkText(name))).click();
@@ -60,8 +63,8 @@ public class HomePage {
      * If the badge is not present, returns "(0)".
      */
     public String cartBadgeText() {
-        var els = driver.findElements(CART_QTY);
-        return els.isEmpty() ? "(0)" : els.get(0).getText().trim();
+        String raw = BrowserUtil.safeGetText(driver, CART_QTY);
+        return raw.isEmpty() ? "(0)" : raw.trim();
     }
 
     /**

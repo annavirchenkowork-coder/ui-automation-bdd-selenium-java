@@ -184,4 +184,10 @@ public final class BrowserUtil {
     public static String getSelectedOption(WebElement selectElement) {
         return new Select(selectElement).getFirstSelectedOption().getText().trim();
     }
+
+    public static String safeGetText(WebDriver driver, By locator) {
+        return driver.findElements(locator).isEmpty()
+                ? ""
+                : driver.findElement(locator).getText().trim();
+    }
 }

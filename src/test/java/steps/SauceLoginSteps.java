@@ -2,8 +2,10 @@ package steps;
 
 import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import pages.sauce.LoginPage;
+import util.BrowserUtil;
 import util.ConfigurationReader;
 import util.Driver;
 
@@ -29,16 +31,8 @@ public class SauceLoginSteps {
 
     @Then("the user should see the products dashboard")
     public void should_see_products_dashboard() {
-        // tiny explicit wait loop to avoid implicit waits
-        long end = System.currentTimeMillis() + 5000;
-        boolean ok = false;
-        while (System.currentTimeMillis() < end) {
-            try {
-                if (loginPage.isProductsPage()) { ok = true; break; }
-                Thread.sleep(200);
-            } catch (Exception ignored) {}
-        }
-        Assertions.assertTrue(ok, "Expected to be on Products page.");
+        BrowserUtil.waitForVisibility(By.cssSelector(".title"), 5);
+        Assertions.assertTrue(loginPage.isProductsPage(), "Expected to be on Products page.");
     }
 
     @When("the user logs in with username {string} and password {string}")
@@ -50,17 +44,9 @@ public class SauceLoginSteps {
 
     @Then("an error message containing {string} should be shown")
     public void error_message_should_be_shown(String expected) {
-        // wait briefly for the error to appear
-        long end = System.currentTimeMillis() + 3000;
-        String actual = "";
-        while (System.currentTimeMillis() < end) {
-            actual = loginPage.getErrorText();
-            if (!actual.isEmpty()) break;
-            try { Thread.sleep(150); } catch (InterruptedException ignored) {}
-        }
+        String actual = BrowserUtil.waitForVisibility(By.cssSelector("[data-test='error']"), 3).getText().trim();
         Assertions.assertTrue(
                 actual.toLowerCase().contains(expected.toLowerCase()),
-                "Expected error to contain: " + expected + " but was: " + actual
-        );
+                "Expected error to contain: " + expected + " but was: " + actual);
     }
 }
