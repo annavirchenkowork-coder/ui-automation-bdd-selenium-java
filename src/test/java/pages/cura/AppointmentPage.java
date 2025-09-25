@@ -77,8 +77,7 @@ public class AppointmentPage {
     }
 
     public void setComment(String comment) {
-        driver.findElement(TXT_COMMENT).clear();
-        driver.findElement(TXT_COMMENT).sendKeys(comment == null ? "" : comment);
+        BrowserUtil.typeAndCommit(driver, TXT_COMMENT, comment);
     }
 
     public void submit() {

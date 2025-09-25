@@ -117,6 +117,26 @@ public final class BrowserUtil {
         return getElementsText(driver().findElements(locator));
     }
 
+    public static void typeAndCommit(WebDriver driver, By locator, String text) {
+        WebElement element = driver.findElement(locator);
+        String value = (text == null) ? "" : text;
+
+        element.clear();
+        element.sendKeys(value);
+
+        // lightweight check (retry a few times)
+        for (int i = 0; i < 3; i++) {
+            if (value.equals(element.getAttribute("value"))) {
+                break; // confirmed
+            }
+            element.clear();
+            element.sendKeys(value);
+        }
+
+        // blur/commit
+        element.sendKeys(Keys.TAB);
+    }
+
     /* ---------------------------
        Waits
        --------------------------- */
