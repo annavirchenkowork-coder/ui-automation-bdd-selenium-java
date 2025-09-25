@@ -78,6 +78,19 @@ public final class BrowserUtil {
         ((JavascriptExecutor) driver())
                 .executeScript("arguments[0].setAttribute(arguments[1], arguments[2]);", element, name, value);
     }
+    /**
+     * Set a value via JS.
+     */
+    public static void setValueJS(By locator, String value) {
+        WebElement el = driver().findElement(locator);
+        String v = (value == null) ? "" : value;
+        ((JavascriptExecutor) driver()).executeScript(
+                "arguments[0].value = arguments[1];" +
+                        "arguments[0].dispatchEvent(new Event('input', {bubbles:true}));" +
+                        "arguments[0].dispatchEvent(new Event('change', {bubbles:true}));",
+                el, v
+        );
+    }
 
     /**
      * Briefly highlight an element (helps when debugging locally).
