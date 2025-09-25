@@ -79,7 +79,7 @@ public class AppointmentPage {
     }
 
     public void setComment(String comment) {
-        BrowserUtil.typeAndCommit(driver, TXT_COMMENT, comment);
+        BrowserUtil.setValueJS(TXT_COMMENT, comment);
     }
 
     public void submit() {
