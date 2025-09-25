@@ -74,6 +74,8 @@ public class AppointmentPage {
         if (dateStr == null || dateStr.isBlank()) return;
         LocalDate d = parseFlexibleDate(dateStr.trim());
         date.sendKeys(d.format(DMY_SLASH));
+        // Close the calendar overlay so the next field can receive input
+        date.sendKeys(Keys.ESCAPE);
     }
 
     public void setComment(String comment) {
