@@ -3,7 +3,7 @@ Feature: Book an appointment on CURA Healthcare Service
 
   Background:
     Given the user is on the CURA home page
-    And the user logs in with username "John Doe" and password "ThisIsNotAPassword"
+    And the user logs into CURA with username "John Doe" and password "ThisIsNotAPassword"
 
   @happy_path
   Scenario: Book an appointment and verify confirmation details
