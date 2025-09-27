@@ -17,5 +17,5 @@ public class LoginPage {
         this.driver = driver;
     }
 
-    
+
 }
