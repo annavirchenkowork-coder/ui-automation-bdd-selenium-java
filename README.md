@@ -61,9 +61,9 @@ src
 **Some of the currently automated flows:**
 - 🔐 **SauceDemo Login & Sorting**
 - 🛒 **nopCommerce Books – Add to Cart & Cart Validation** 
+- - 🏥 **CURA Appointment Booking**
 
 **Upcoming features (in progress 🚧):**
-- 🏥 **CURA Appointment Booking**
 - 🏦 **Parabank Login & Money Transfer**
 
 
