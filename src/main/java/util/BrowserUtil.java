@@ -36,6 +36,17 @@ public final class BrowserUtil {
         driver().switchTo().window(origin);
     }
 
+    public static void openPage(String baseUrlKey, String path) {
+        String baseUrl = ConfigurationReader.getProperty(baseUrlKey);
+        if (baseUrl == null || baseUrl.isBlank()) {
+            throw new IllegalArgumentException("Missing baseUrl for: " + baseUrlKey);
+        }
+        if (!baseUrl.endsWith("/")) {
+            baseUrl += "/";
+        }
+        driver().get(baseUrl + path);
+    }
+
     /* ---------------------------
        Actions & Scrolling
        --------------------------- */
