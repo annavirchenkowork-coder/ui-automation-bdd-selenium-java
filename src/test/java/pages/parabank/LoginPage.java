@@ -17,5 +17,10 @@ public class LoginPage {
         this.driver = driver;
     }
 
+    public void open() {
+        BrowserUtil.openPage("baseUrl.parabank", "parabank/index.htm");
+        BrowserUtil.waitForVisibility(USERNAME, 8);
+    }
+
 
 }
