@@ -22,5 +22,9 @@ public class LoginPage {
         BrowserUtil.waitForVisibility(USERNAME, 8);
     }
 
+    public void login(String user, String pass) {
+        BrowserUtil.performLogin(USERNAME, PASSWORD, BTN_LOGIN, user, pass);
+    }
+
 
 }
