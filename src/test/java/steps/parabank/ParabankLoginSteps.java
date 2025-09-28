@@ -10,7 +10,7 @@ import util.Driver;
 public class ParabankLoginSteps {
 
     private final WebDriver driver = Driver.getDriver();
-    private final LoginPage loginPage = new LoginPage(driver);
+    private final LoginPage loginPage = new LoginPage();
     private final AccountsOverviewPage accountsPage = new AccountsOverviewPage(driver);
 
     @Given("the user is on the Parabank login page")
