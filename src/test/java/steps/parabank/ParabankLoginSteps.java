@@ -1,4 +1,4 @@
-package steps;
+package steps.parabank;
 
 import io.cucumber.java.en.*;
 import org.openqa.selenium.WebDriver;
