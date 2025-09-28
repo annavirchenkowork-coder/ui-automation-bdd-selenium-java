@@ -26,5 +26,9 @@ public class LoginPage {
         BrowserUtil.performLogin(USERNAME, PASSWORD, BTN_LOGIN, user, pass);
     }
 
+    public String getErrorMessage() {
+        return BrowserUtil.safeGetText(driver, ERROR_MSG);
+    }
+
 
 }
