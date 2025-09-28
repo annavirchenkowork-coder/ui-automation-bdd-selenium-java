@@ -16,7 +16,7 @@ public class LoginPage {
     }
 
     public void open() {
-        BrowserUtil.openPage("baseUrl.parabank", "parabank/index.htm");
+        BrowserUtil.openPage("baseUrl.parabank", "index.htm");
         BrowserUtil.waitForVisibility(USERNAME, 8);
     }
 

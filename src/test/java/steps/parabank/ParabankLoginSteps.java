@@ -30,7 +30,7 @@ public class ParabankLoginSteps {
 
     @Given("the user tries to access the Accounts Overview page directly")
     public void access_overview_directly() {
-        driver.get(ConfigurationReader.getProperty("baseUrl.parabank") + "/parabank/overview.htm");
+        driver.get(ConfigurationReader.getProperty("baseUrl.parabank") + "overview.htm");
     }
 
     @Then("the Parabank login page should be visible")
