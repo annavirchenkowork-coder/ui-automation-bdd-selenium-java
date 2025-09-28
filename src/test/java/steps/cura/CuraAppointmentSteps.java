@@ -1,4 +1,4 @@
-package steps;
+package steps.cura;
 
 import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
