@@ -11,7 +11,7 @@ public class ParabankLoginSteps {
 
     private final WebDriver driver = Driver.getDriver();
     private final LoginPage loginPage = new LoginPage();
-    private final AccountsOverviewPage accountsPage = new AccountsOverviewPage(driver);
+    private final AccountsOverviewPage accountsPage = new AccountsOverviewPage();
 
     @Given("the user is on the Parabank login page")
     public void open_login_page() {
