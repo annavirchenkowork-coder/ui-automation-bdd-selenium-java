@@ -11,8 +11,6 @@ public class LoginPage {
     private static final By PASSWORD = By.name("password");
     private static final By BTN_LOGIN = By.cssSelector("input.button");
 
-    private static final By ERROR_MSG = By.cssSelector("p.error");
-
     public LoginPage(WebDriver driver) {
         this.driver = driver;
     }
