@@ -47,6 +47,17 @@ public final class BrowserUtil {
         driver().get(baseUrl + path);
     }
 
+    public static void performLogin(By userField, By passField, By btnLogin,
+                                    String username, String password) {
+        driver().findElement(userField).clear();
+        driver().findElement(userField).sendKeys(username);
+
+        driver().findElement(passField).clear();
+        driver().findElement(passField).sendKeys(password);
+
+        driver().findElement(btnLogin).click();
+    }
+
     /* ---------------------------
        Actions & Scrolling
        --------------------------- */
