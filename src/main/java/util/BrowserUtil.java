@@ -100,6 +100,7 @@ public final class BrowserUtil {
         ((JavascriptExecutor) driver())
                 .executeScript("arguments[0].setAttribute(arguments[1], arguments[2]);", element, name, value);
     }
+
     /**
      * Set a value via JS.
      */
@@ -112,22 +113,6 @@ public final class BrowserUtil {
                         "arguments[0].dispatchEvent(new Event('change', {bubbles:true}));",
                 el, v
         );
-    }
-
-    /**
-     * Briefly highlight an element (helps when debugging locally).
-     */
-    public static void highlight(WebElement element) {
-        JavascriptExecutor js = (JavascriptExecutor) driver();
-        String original = element.getAttribute("style");
-        try {
-            js.executeScript(
-                    "arguments[0].setAttribute('style', (arguments[1]||'') + 'background: yellow; border: 2px solid red;');",
-                    element, original);
-            sleep(400);
-        } finally {
-            js.executeScript("arguments[0].setAttribute('style', arguments[1]);", element, original);
-        }
     }
 
     /* ---------------------------
@@ -170,6 +155,25 @@ public final class BrowserUtil {
 
         // blur/commit
         element.sendKeys(Keys.TAB);
+    }
+
+    public static boolean textContains(WebDriver driver, By locator, String expected, int timeoutSeconds) {
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(timeoutSeconds))
+                    .until(d -> {
+                        String actual = safeGetText(driver, locator);
+                        return actual.contains(expected);
+                    });
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+
+    public static String safeGetText(WebDriver driver, By locator) {
+        return driver.findElements(locator).isEmpty()
+                ? ""
+                : driver.findElement(locator).getText().trim();
     }
 
     /* ---------------------------
@@ -265,11 +269,5 @@ public final class BrowserUtil {
 
     public static String getSelectedOption(WebElement selectElement) {
         return new Select(selectElement).getFirstSelectedOption().getText().trim();
-    }
-
-    public static String safeGetText(WebDriver driver, By locator) {
-        return driver.findElements(locator).isEmpty()
-                ? ""
-                : driver.findElement(locator).getText().trim();
     }
 }
