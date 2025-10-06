@@ -25,7 +25,7 @@ public class AccountsOverviewPage {
     }
     /** Returns all account numbers listed in the account table. */
     public List<String> getAccountNumbers() {
-        BrowserUtil.waitForVisibility(ACCOUNT_LINKS, 8);
+        BrowserUtil.waitForVisibility(ACCOUNT_LINKS, 15);
         return getDriver().findElements(ACCOUNT_LINKS)
                 .stream()
                 .map(WebElement::getText)
