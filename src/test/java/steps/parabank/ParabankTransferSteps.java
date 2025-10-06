@@ -14,11 +14,16 @@ public class ParabankTransferSteps {
     private final TransferFundsPage transfer = new TransferFundsPage();
     private final LoginPage login = new LoginPage();
 
+    private List<String> availableAccounts;
+
     @Given("the user is logged in to Parabank")
     public void logged_in() {
         login.open();
         login.login("demo", "demo");
         Assertions.assertTrue(overview.isVisible(), "Accounts Overview not visible after login.");
+        // ✅ Capture available accounts *while still on overview page*
+        availableAccounts = overview.getAccountNumbers();
+        System.out.println("Available accounts: " + availableAccounts);
     }
 
     @When("the user navigates to Transfer Funds")
