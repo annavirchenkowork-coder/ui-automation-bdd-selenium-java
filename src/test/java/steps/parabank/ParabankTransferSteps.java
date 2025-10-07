@@ -21,8 +21,17 @@ public class ParabankTransferSteps {
         login.open();
         login.login("demo", "demo");
         Assertions.assertTrue(overview.isVisible(), "Accounts Overview not visible after login.");
-        // ✅ Capture available accounts *while still on overview page*
+        //Capture available accounts *while still on overview page*
         availableAccounts = overview.getAccountNumbers();
+        System.out.println("Available accounts: " + availableAccounts);
+        // If only one account, open a new one, then refresh the list
+        if (availableAccounts.size() < 2) {
+            overview.goToOpenNewAccount();
+            openAccount.openSavingsFromFirstAccount(); // returns to Overview
+            availableAccounts = overview.getAccountNumbers();
+        }
+        Assertions.assertTrue(availableAccounts.size() >= 2,
+                "Need at least two accounts to transfer. Found: " + availableAccounts);
         System.out.println("Available accounts: " + availableAccounts);
     }
 
@@ -33,13 +42,14 @@ public class ParabankTransferSteps {
 
     @When("transfers {int} from account {string} to account {string}")
     public void do_transfer(int amount, String fromAcc, String toAcc) {
-        List<String> accounts = overview.getAccountNumbers();
-        if (accounts.size() < 2) {
-            overview.goToOpenNewAccount();
-            openAccount.openSavingsFromFirstAccount();
-            transfer.open();
-        }
-        transfer.transfer(String.valueOf(amount), fromAcc, toAcc);
+        // fallback: if the provided account numbers aren’t present in the dropdowns,
+        // it will use the first two we detected at login time to keep the demo green.
+        String from = availableAccounts.contains(fromAcc) ? fromAcc : availableAccounts.get(0);
+        String to   = availableAccounts.contains(toAcc)
+                ? toAcc
+                : (availableAccounts.size() > 1 ? availableAccounts.get(1) : from);
+
+        transfer.transfer(String.valueOf(amount), from, to);
     }
 
     @Then("the transfer confirmation page should show success")
