@@ -19,11 +19,17 @@ public class AccountsOverviewPage {
 
     public AccountsOverviewPage() {
     }
-    /** Page is considered visible when the right-panel title shows "Accounts Overview". */
+
+    /**
+     * Page is considered visible when the right-panel title shows "Accounts Overview".
+     */
     public boolean isVisible() {
         return BrowserUtil.isDisplayed(ROOT);
     }
-    /** Returns all account numbers listed in the account table. */
+
+    /**
+     * Returns all account numbers listed in the account table.
+     */
     public List<String> getAccountNumbers() {
         BrowserUtil.waitForVisibility(ACCOUNT_LINKS, 15);
         return getDriver().findElements(ACCOUNT_LINKS)
@@ -33,8 +39,10 @@ public class AccountsOverviewPage {
                 .collect(Collectors.toList());
     }
 
-    /** Clicks the left navigation link to open the "Open New Account" page. */
+    /**
+     * Clicks the left navigation link to open the "Open New Account" page.
+     */
     public void goToOpenNewAccount() {
-      getDriver().findElement(LEFT_OPEN_NEW_ACCOUNT).click();
+        getDriver().findElement(LEFT_OPEN_NEW_ACCOUNT).click();
     }
 }
