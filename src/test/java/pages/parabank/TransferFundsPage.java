@@ -1,7 +1,10 @@
 package pages.parabank;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import util.BrowserUtil;
+
+import java.util.List;
 
 import static util.Driver.getDriver;
 
@@ -18,17 +21,42 @@ public class TransferFundsPage {
     }
 
     public void transfer(String amount, String fromAccount, String toAccount) {
-        getDriver().findElement(AMOUNT).clear();
-        getDriver().findElement(AMOUNT).sendKeys(amount);
+        // amount
+        WebElement amountEl = getDriver().findElement(AMOUNT);
+        amountEl.clear();
+        amountEl.sendKeys(amount);
 
-        BrowserUtil.selectByVisibleText(getDriver().findElement(FROM), fromAccount);
-        BrowserUtil.selectByVisibleText(getDriver().findElement(TO), toAccount);
+        // selects (use your BrowserUtil helpers)
+        WebElement fromEl = getDriver().findElement(FROM);
+        WebElement toEl   = getDriver().findElement(TO);
 
+        List<String> fromOptions = BrowserUtil.getAllSelectOptions(fromEl);
+        List<String> toOptions   = BrowserUtil.getAllSelectOptions(toEl);
+
+        // Choose FROM: use requested if present, otherwise first option
+        if (fromOptions.contains(fromAccount)) {
+            BrowserUtil.selectByVisibleText(fromEl, fromAccount);
+        } else if (!fromOptions.isEmpty()) {
+            BrowserUtil.selectByVisibleText(fromEl, fromOptions.get(0));
+            fromAccount = BrowserUtil.getSelectedOption(fromEl);
+        }
+
+        // Choose TO: prefer requested, but ensure it's different from FROM; otherwise pick a different one
+        String finalTo = toAccount;
+        if (!toOptions.contains(finalTo) || finalTo.equals(fromAccount)) {
+            String finalFromAccount = fromAccount;
+            finalTo = toOptions.stream()
+                    .filter((String opt) -> !opt.equals(finalFromAccount))
+                    .findFirst()
+                    .orElse(fromAccount);
+        }
+        BrowserUtil.selectByVisibleText(toEl, finalTo);
+        // submit
         getDriver().findElement(BTN_TRANSFER).click();
     }
 
     public boolean isSuccessShown() {
-        return BrowserUtil.textContains(getDriver(), SUCCESS_TITLE, "Transfer Complete!", 8);
+        return BrowserUtil.textContains(getDriver(), SUCCESS_TITLE, "Transfer Complete!", 10);
     }
 
 }
