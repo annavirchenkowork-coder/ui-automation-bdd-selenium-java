@@ -6,7 +6,9 @@ import io.cucumber.java.Scenario;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.junit.jupiter.api.Assumptions;
 import util.Driver;
+import util.ParabankHealth;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +22,15 @@ public class Hooks {
     public void setUp() {
         // Initialize driver before each scenario
         Driver.getDriver();
+    }
+
+    @Before("@parabank")
+    public void checkParabankHealth() {
+        boolean isUp = ParabankHealth.isUp();
+        Assumptions.assumeTrue(
+                isUp,
+                "Skipping test: Parabank is down or showing internal error."
+        );
     }
 
     @After(order = 1)
