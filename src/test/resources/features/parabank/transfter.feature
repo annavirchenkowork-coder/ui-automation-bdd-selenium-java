@@ -1,3 +1,4 @@
+@parabank
 Feature: Parabank Money Transfer
   Scenario: Transfer money between accounts
     Given the user is logged in to Parabank
