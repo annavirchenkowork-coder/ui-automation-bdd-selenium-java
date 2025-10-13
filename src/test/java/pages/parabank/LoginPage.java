@@ -12,6 +12,7 @@ public class LoginPage {
     private static final By BTN_LOGIN = By.cssSelector("input.button");
     private static final By ERROR_BOX = By.cssSelector("#rightPanel .error");
     private static final By H1_TITLE = By.cssSelector("#rightPanel h1.title");
+    private static final By REGISTER_LINK = By.linkText("Register");
 
     public LoginPage() {}
 
@@ -40,5 +41,13 @@ public class LoginPage {
     /** True when we land on any account page (title exists). */
     public boolean loggedIn() {
         return BrowserUtil.textContains(getDriver(), H1_TITLE, "Accounts", 6);
+    }
+
+    public String getErrorMessage() {
+        return BrowserUtil.safeGetText(getDriver(), ERROR_BOX).toLowerCase();
+    }
+
+    public void goToRegister() {
+        getDriver().findElement(REGISTER_LINK).click();
     }
 }
