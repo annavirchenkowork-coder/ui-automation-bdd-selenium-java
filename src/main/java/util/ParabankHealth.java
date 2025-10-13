@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.time.Duration;
-import java.util.Locale;
 
 public class ParabankHealth {
 
@@ -16,56 +14,59 @@ public class ParabankHealth {
     }
 
     private static final String DEFAULT_BASE =
-            ConfigurationReader.getProperty("baseUrl.parabank"); // e.g. https://parabank.parasoft.com/parabank/
-    private static final String PATH = "login.htm";
+            ConfigurationReader.getProperty("baseUrl.parabank"); // e.g. https://parabank.parasoft.com/parabank/;
 
     public static Health check() {
         String base = DEFAULT_BASE.endsWith("/") ? DEFAULT_BASE : DEFAULT_BASE + "/";
-        String url = base + PATH;
-
-        // quick override: -Dparabank.health.force=true  (or env PARABANK_HEALTH_FORCE=true)
+        String[] paths = { "login.htm", "", "index.htm" }; // try a few
         if (isTrue(System.getProperty("parabank.health.force"))
                 || isTrue(System.getenv("PARABANK_HEALTH_FORCE"))) {
             return new Health(true, "Forced by flag");
         }
 
-        int attempts = 3;
-        for (int i = 1; i <= attempts; i++) {
-            try {
-                HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-                conn.setRequestMethod("GET");
-                conn.setInstanceFollowRedirects(true);
-                conn.setConnectTimeout((int) Duration.ofSeconds(4).toMillis());
-                conn.setReadTimeout((int) Duration.ofSeconds(6).toMillis());
-                conn.setRequestProperty("User-Agent", "UI-Auto-Health/1.0");
+        StringBuilder attemptsLog = new StringBuilder();
+        for (int i = 0; i < paths.length; i++) {
+            String url = base + paths[i];
+            for (int attempt = 1; attempt <= 2; attempt++) {
+                try {
+                    HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setInstanceFollowRedirects(true);
+                    conn.setConnectTimeout(4000);
+                    conn.setReadTimeout(6000);
+                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) Safari/537.36");
+                    conn.setRequestProperty("Accept", "text/html,application/xhtml+xml");
+                    conn.setRequestProperty("Accept-Language", "en-US,en;q=0.8");
 
-                int code = conn.getResponseCode();
-                String body = readBody(conn);
+                    int code = conn.getResponseCode();
+                    String body = readBody(conn);
+                    boolean hasBrand = body.contains("PARA BANK") || body.contains("ParaBank")
+                            || body.toLowerCase().contains("customer login");
+                    boolean hasInternalError = body.contains("An internal error has occurred");
 
-                // Positive signal: login form marker
-                boolean hasLogin = body.toLowerCase(Locale.ROOT).contains("customer login");
+                    // Accept any <500 if page looks like ParaBank and not the red error banner
+                    if (code < 500 && hasBrand && !hasInternalError) {
+                        return new Health(true, "OK (" + code + ") on " + paths[i]);
+                    }
 
-                // Negative signal: well-known red error
-                boolean hasInternalError = body.contains("An internal error has occurred");
+                    attemptsLog.append("[")
+                            .append(paths[i]).append(" try ").append(attempt)
+                            .append("] code=").append(code)
+                            .append(" brand=").append(hasBrand)
+                            .append(" internalError=").append(hasInternalError)
+                            .append("; ");
+                    Thread.sleep(250L * attempt);
 
-                if (code >= 200 && code < 400 && hasLogin && !hasInternalError) {
-                    return new Health(true, "OK (" + code + ")");
+                } catch (Exception e) {
+                    attemptsLog.append("[")
+                            .append(paths[i]).append(" try ").append(attempt)
+                            .append("] ex=").append(e.getClass().getSimpleName())
+                            .append(":").append(e.getMessage()).append("; ");
+                    try { Thread.sleep(250L * attempt); } catch (InterruptedException ignored) {}
                 }
-
-                String reason = "HTTP " + code +
-                        ", loginMarker=" + hasLogin +
-                        ", internalError=" + hasInternalError;
-                // brief backoff before next attempt
-                Thread.sleep(400L * i);
-                if (i == attempts) return new Health(false, reason);
-
-            } catch (Exception e) {
-                String reason = "Exception: " + e.getClass().getSimpleName() + " - " + e.getMessage();
-                try { Thread.sleep(300L * i); } catch (InterruptedException ignored) {}
-                if (i == attempts) return new Health(false, reason);
             }
         }
-        return new Health(false, "Unknown");
+        return new Health(false, attemptsLog.toString());
     }
 
     private static String readBody(HttpURLConnection conn) {
