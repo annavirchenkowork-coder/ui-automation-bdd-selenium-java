@@ -29,4 +29,22 @@ public final class ParabankAuth {
             throw new IllegalStateException("Could not log in to Parabank after self-heal.");
         }
     }
+
+    public static void ensureRegisteredAndLoggedIn(String username, String password) {
+        LoginPage login = new LoginPage();
+        login.open();
+        login.login(username, password);
+
+        if (login.invalidCredsShown()) {
+            RegisterPage reg = new RegisterPage();
+            reg.open();
+            reg.register(username, password);
+            login.open();
+            login.login(username, password);
+        }
+
+        if (!login.loggedIn()) {
+            throw new IllegalStateException("Could not log in to Parabank after self-heal.");
+        }
+    }
 }
