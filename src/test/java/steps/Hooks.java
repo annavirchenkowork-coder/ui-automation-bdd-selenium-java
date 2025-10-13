@@ -24,13 +24,12 @@ public class Hooks {
         Driver.getDriver();
     }
 
+
     @Before("@parabank")
     public void checkParabankHealth() {
-        boolean isUp = ParabankHealth.isUp();
-        Assumptions.assumeTrue(
-                isUp,
-                "Skipping test: Parabank is down or showing internal error."
-        );
+        ParabankHealth.Health h = ParabankHealth.check();
+        System.out.println("[ParabankHealth] status=" + (h.ok ? "UP" : "DOWN") + " reason=" + h.reason);
+        Assumptions.assumeTrue(h.ok, "Skipping test: Parabank appears down. Reason: " + h.reason);
     }
 
     @After(order = 1)
