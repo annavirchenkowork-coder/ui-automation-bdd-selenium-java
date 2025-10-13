@@ -18,18 +18,23 @@ public class ParabankTransferSteps {
 
     @Given("the user is logged in to Parabank")
     public void logged_in() {
-        login.open();
-        login.login("demo", "demo");
+        // Self-healing login
+        ParabankAuth.ensureLoggedIn("demo", "demo");
+
+        // Continue your existing setup logic
         Assertions.assertTrue(overview.isVisible(), "Accounts Overview not visible after login.");
-        //Capture available accounts *while still on overview page*
+
+        // Capture available accounts *while still on overview page*
         availableAccounts = overview.getAccountNumbers();
         System.out.println("Available accounts: " + availableAccounts);
+
         // If only one account, open a new one, then refresh the list
         if (availableAccounts.size() < 2) {
             overview.goToOpenNewAccount();
             openAccount.openSavingsFromFirstAccount(); // returns to Overview
             availableAccounts = overview.getAccountNumbers();
         }
+
         Assertions.assertTrue(availableAccounts.size() >= 2,
                 "Need at least two accounts to transfer. Found: " + availableAccounts);
         System.out.println("Available accounts: " + availableAccounts);
