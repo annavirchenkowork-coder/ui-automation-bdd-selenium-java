@@ -18,10 +18,14 @@ public class ParabankTransferSteps {
 
     @Given("the user is logged in to Parabank")
     public void logged_in() {
-        // Self-healing login
-        ParabankAuth.ensureLoggedIn("demo", "demo");
+        String username = "demo_" + System.currentTimeMillis();
+        String password = "demo";
 
-        // Continue your existing setup logic
+        // Self-healing login + registration if needed
+
+        ParabankAuth.ensureRegisteredAndLoggedIn(username, password);
+
+        // Continue existing setup logic
         Assertions.assertTrue(overview.isVisible(), "Accounts Overview not visible after login.");
 
         // Capture available accounts *while still on overview page*
