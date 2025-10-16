@@ -12,7 +12,6 @@ public class ParabankTransferSteps {
     private final AccountsOverviewPage overview = new AccountsOverviewPage();
     private final OpenNewAccountPage openAccount = new OpenNewAccountPage();
     private final TransferFundsPage transfer = new TransferFundsPage();
-    private final LoginPage login = new LoginPage();
 
     private List<String> availableAccounts;
 
