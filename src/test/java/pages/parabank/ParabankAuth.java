@@ -13,28 +13,23 @@ public class ParabankAuth {
     private static final RegisterPage register = new RegisterPage();
 
     public static void ensureRegisteredAndLoggedIn(String username, String password) {
-        // 1) First attempt: normal login
+        // 1) First attempt: straight login
         login.open();
         login.login(username, password);
-        if (overview.isVisible()) {
-            landOnOverview();
-            return;
-        }
+        if (overview.isVisible()) { landOnOverview(); return; }
 
-        // Diagnose current state
         String err = login.getErrorMessage();
-        err = (err == null) ? "" : err.toLowerCase();
-        String url = getDriver().getCurrentUrl();
+        String url = safeUrl();
 
-        // 2) Credentials not recognized -> register path
-        if (err.contains("could not be verified")) {
+        // 2) Credentials not recognized -> self-register flow
+        if (err != null && err.toLowerCase().contains("could not be verified")) {
             selfRegisterAndLogin(username, password);
             if (overview.isVisible()) { landOnOverview(); return; }
             throw new IllegalStateException("Registered but still not logged in.");
         }
 
-        // 3) Internal error -> clean session + retry once, then register fresh user
-        if (err.contains("internal error")) {
+        // 3) Internal error page -> clean session + retry; then fallback to register
+        if (pageHasInternalError()) {
             getDriver().manage().deleteAllCookies();
             getDriver().navigate().to(BASE + "index.htm");
             login.open();
@@ -47,10 +42,9 @@ public class ParabankAuth {
             throw new IllegalStateException("Could not recover from internal error.");
         }
 
-        // 4) Unknown / blank state (blank page, data: URL, no error message) -> try register
-        if (url.startsWith("data:") || err.isBlank()) {
+        // 4) Unknown/blank/data: states -> try register with a fresh username
+        if (url.startsWith("data:") || err == null || err.isBlank()) {
             String freshUser = username + "_" + System.currentTimeMillis();
-            getDriver().navigate().to(BASE + "register.htm");
             selfRegisterAndLogin(freshUser, password);
             if (overview.isVisible()) { landOnOverview(); return; }
         }
@@ -59,40 +53,94 @@ public class ParabankAuth {
         throw new IllegalStateException("Could not log in to Parabank after self-heal. url=" + url + " err=" + err);
     }
 
+    /** Always land on Accounts Overview so downstream steps can find the accounts table. */
     private static void landOnOverview() {
         BrowserUtil.openPage("baseUrl.parabank", "overview.htm");
         BrowserUtil.waitForVisibility(By.cssSelector("#accountTable tbody tr td a"), 12);
     }
 
+    /** True if the right panel shows the Parabank server error page. */
+    private static boolean pageHasInternalError() {
+        String panel = BrowserUtil.safeGetText(getDriver(), By.cssSelector("#rightPanel"));
+        return panel != null && panel.toLowerCase().contains("internal error");
+    }
+
+    private static String safeUrl() {
+        try { return getDriver().getCurrentUrl(); } catch (Exception e) { return ""; }
+    }
+
     /**
-     * Registers a user and ensures we are logged in.
+     * Registers the given username; if we're stuck on register.htm,
+     * it will auto-generate new usernames and retry up to a few times. On success we ensure
+     * we end up on Accounts Overview.
      */
-    private static void selfRegisterAndLogin(String username, String password) {
-        // Go directly to Register
-        register.open();
-        register.registerMinimal(username, password);
+    private static void selfRegisterAndLogin(String baseUsername, String password) {
+        String username = baseUsername;
+        final int maxAttempts = 4;
 
-        // Small settle wait: the site can be slow to redirect/render
-        BrowserUtil.sleep(500);
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            register.open();
+            register.register(username, password);
 
-        if (overview.isVisible()) {
-            landOnOverview();
-            return;
-        }
-
-        boolean onLoginForm = !getDriver().findElements(By.name("username")).isEmpty();
-        if (onLoginForm) {
-            login.open();
-            login.login(username, password);
             if (overview.isVisible()) {
                 landOnOverview();
                 return;
             }
-            throw new IllegalStateException("Registered, saw login form, but still not logged in.");
+
+            if (isLoginPageVisible()) {
+                login.login(username, password);
+                if (overview.isVisible()) { landOnOverview(); return; }
+            }
+
+            String url = safeUrl();
+            if (url.contains("/register.htm")) {
+                String rightPanel = BrowserUtil.safeGetText(getDriver(), By.cssSelector("#rightPanel")).toLowerCase();
+
+                boolean usernameTaken =
+                        rightPanel.contains("already") && rightPanel.contains("exist");
+
+                boolean anyValidationError =
+                        rightPanel.contains("error") || rightPanel.contains("required");
+
+                if (usernameTaken || anyValidationError || rightPanel.isBlank()) {
+                    username = baseUsername + "_" + (System.currentTimeMillis() % 100000);
+                    continue;
+                }
+
+                BrowserUtil.openPage("baseUrl.parabank", "overview.htm");
+                if (overview.isVisible()) { landOnOverview(); return; }
+            }
+
+            if (url.endsWith("/index.htm")) {
+                login.login(username, password);
+                if (overview.isVisible()) { landOnOverview(); return; }
+            }
+
+            // If the site showed internal error, clean and retry with a fresh username.
+            if (pageHasInternalError()) {
+                getDriver().manage().deleteAllCookies();
+                username = baseUsername + "_" + (System.currentTimeMillis() % 100000);
+                continue;
+            }
+
+            BrowserUtil.sleep(700);
         }
 
-        // Neither overview nor login form → surface what page we're on
+        // Final safety try: navigate to overview explicitly once more
+        BrowserUtil.openPage("baseUrl.parabank", "overview.htm");
+        if (overview.isVisible()) { landOnOverview(); return; }
+
         throw new IllegalStateException(
-                "Registration finished but neither Overview nor Login is present. URL=" + getDriver().getCurrentUrl());
+                "Registration finished but neither Overview nor Login is present. URL=" + safeUrl()
+        );
+    }
+
+    private static boolean isLoginPageVisible() {
+        try {
+            BrowserUtil.waitForVisibility(By.name("username"), 2);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
