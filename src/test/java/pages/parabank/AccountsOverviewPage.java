@@ -5,7 +5,6 @@ import org.openqa.selenium.WebElement;
 import util.BrowserUtil;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static util.Driver.getDriver;
 
