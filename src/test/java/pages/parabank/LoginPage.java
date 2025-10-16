@@ -18,8 +18,18 @@ public class LoginPage {
 
     public void open() {
         BrowserUtil.openPage("baseUrl.parabank", "index.htm");
-        BrowserUtil.waitForVisibility(USERNAME, 8);
-        if (BrowserUtil.safeGetText(getDriver(), By.cssSelector("#rightPanel")).contains("An internal error has occurred")) {
+
+        // Either the login field is visible OR we see Log Out (already logged in)
+        try {
+            BrowserUtil.waitForVisibility(USERNAME, 8);
+        } catch (org.openqa.selenium.TimeoutException e) {
+            if (!BrowserUtil.isDisplayed(By.linkText("Log Out"))) {
+                throw e; // neither login nor logged-in state → real problem
+            }
+        }
+
+        if (BrowserUtil.safeGetText(getDriver(), By.cssSelector("#rightPanel"))
+                .contains("An internal error has occurred")) {
             throw new IllegalStateException("Parabank shows server error page. Aborting test early.");
         }
     }
