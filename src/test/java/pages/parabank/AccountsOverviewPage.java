@@ -33,12 +33,12 @@ public class AccountsOverviewPage {
      * Returns all account numbers listed in the account table.
      */
     public List<String> getAccountNumbers() {
+        if (!isVisible()) {
+            throw new IllegalStateException("Not on Accounts Overview (title mismatch).");
+        }
         BrowserUtil.waitForVisibility(ACCOUNT_LINKS, 15);
         return getDriver().findElements(ACCOUNT_LINKS)
-                .stream()
-                .map(WebElement::getText)
-                .map(String::trim)
-                .collect(Collectors.toList());
+                .stream().map(WebElement::getText).map(String::trim).toList();
     }
 
     /**
