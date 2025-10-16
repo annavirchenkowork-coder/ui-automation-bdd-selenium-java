@@ -11,7 +11,7 @@ import static util.Driver.getDriver;
 
 public class AccountsOverviewPage {
     // Title at the top of the right panel, e.g. "Accounts Overview"
-    private static final By ROOT = By.cssSelector("h1.title");
+    private static final By ROOT = By.cssSelector("#rightPanel h1.title");
     // Table links for each account number
     private static final By ACCOUNT_LINKS = By.cssSelector("#accountTable tbody tr td a");
     // Left-menu link
@@ -23,8 +23,10 @@ public class AccountsOverviewPage {
     /**
      * Page is considered visible when the right-panel title shows "Accounts Overview".
      */
+    /** Page is visible only when the title is exactly "Accounts Overview". */
     public boolean isVisible() {
-        return BrowserUtil.isDisplayed(ROOT);
+
+       return BrowserUtil.textContains(getDriver(), ROOT, "Accounts Overview", 8);
     }
 
     /**
