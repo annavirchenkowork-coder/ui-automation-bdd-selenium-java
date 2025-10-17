@@ -74,6 +74,18 @@ public class ParabankLoginSteps {
         loginPage.login(registeredUsername, registeredPassword);
     }
 
+    @Given("the user is logged in to Parabank")
+    public void user_is_logged_in_to_parabank() {
+        String username = "demo_" + System.currentTimeMillis();
+        String password = "demo";
+
+        ParabankAuth.ensureRegisteredAndLoggedIn(username, password);
+        Assertions.assertTrue(
+                new AccountsOverviewPage().isVisible(),
+                "Accounts Overview not visible after login."
+        );
+    }
+
     // -----------------------
     // Helpers
     // -----------------------
