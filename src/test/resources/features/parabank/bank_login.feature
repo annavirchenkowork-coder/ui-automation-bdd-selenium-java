@@ -1,7 +1,9 @@
+@parabank @login
 Feature: Parabank Login
-  Scenario: Successful login
-    Given the user is on the Parabank login page
-    When the user logs into Parabank with username "demo" and password "demo"
+
+  Scenario: New user can register and land on Accounts Overview
+    Given a fresh Parabank user is registered
+    When the user logs into Parabank with those credentials
     Then the Accounts Overview page should be visible
 
   Scenario: Accessing accounts without login should redirect to login page
