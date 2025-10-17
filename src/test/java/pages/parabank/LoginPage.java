@@ -11,10 +11,10 @@ public class LoginPage {
     private static final By PASSWORD = By.name("password");
     private static final By BTN_LOGIN = By.cssSelector("input.button");
     private static final By ERROR_BOX = By.cssSelector("#rightPanel .error");
-    private static final By H1_TITLE = By.cssSelector("#rightPanel h1.title");
     private static final By REGISTER_LINK = By.linkText("Register");
 
-    public LoginPage() {}
+    public LoginPage() {
+    }
 
     public void open() {
         BrowserUtil.openPage("baseUrl.parabank", "index.htm");
@@ -40,17 +40,6 @@ public class LoginPage {
 
     public boolean isVisible() {
         return BrowserUtil.isDisplayed(USERNAME);
-    }
-
-    /** True when the “invalid creds” error is shown. */
-    public boolean invalidCredsShown() {
-        return BrowserUtil.textContains(getDriver(), ERROR_BOX,
-                "The username and password could not be verified.", 4);
-    }
-
-    /** True when we land on any account page (title exists). */
-    public boolean loggedIn() {
-        return BrowserUtil.textContains(getDriver(), H1_TITLE, "Accounts", 6);
     }
 
     public String getErrorMessage() {
