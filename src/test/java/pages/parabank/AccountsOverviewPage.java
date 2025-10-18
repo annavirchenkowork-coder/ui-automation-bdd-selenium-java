@@ -21,6 +21,7 @@ public class AccountsOverviewPage {
     // Left navigation links
     private static final By LEFT_OPEN_NEW_ACCOUNT = By.linkText("Open New Account");
     private static final By LEFT_ACCOUNTS_OVERVIEW = By.linkText("Accounts Overview");
+    private static final By LEFT_TRANSFER_FUNDS = By.linkText("Transfer Funds");
 
     public AccountsOverviewPage() {}
 
@@ -67,5 +68,11 @@ public class AccountsOverviewPage {
      */
     public void goToOpenNewAccount() {
         getDriver().findElement(LEFT_OPEN_NEW_ACCOUNT).click();
+    }
+
+    /** Opens Transfer Funds from the left nav, ensuring we're on Overview first. */
+    public void goToTransferFunds() {
+        ensureAt();
+        getDriver().findElement(LEFT_TRANSFER_FUNDS).click();
     }
 }
