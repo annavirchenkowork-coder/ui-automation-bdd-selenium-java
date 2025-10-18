@@ -13,43 +13,49 @@ public class ParabankAuth {
     private static final RegisterPage register = new RegisterPage();
 
     public static void ensureRegisteredAndLoggedIn(String username, String password) {
-        // 1) First attempt: straight login
-        login.open();
-        login.login(username, password);
         if (overview.isVisible()) { landOnOverview(); return; }
+
+        if (!login.isVisible()) {
+            login.open();
+        }
+
+        if (login.isVisible()) {
+            login.login(username, password);
+            if (overview.isVisible()) { landOnOverview(); return; }
+        }
 
         String err = login.getErrorMessage();
         String url = safeUrl();
 
-        // 2) Credentials not recognized -> self-register flow
         if (err != null && err.toLowerCase().contains("could not be verified")) {
             selfRegisterAndLogin(username, password);
             if (overview.isVisible()) { landOnOverview(); return; }
             throw new IllegalStateException("Registered but still not logged in.");
         }
 
-        // 3) Internal error page -> clean session + retry; then fallback to register
         if (pageHasInternalError()) {
             getDriver().manage().deleteAllCookies();
             getDriver().navigate().to(BASE + "index.htm");
-            login.open();
-            login.login(username, password);
-            if (overview.isVisible()) { landOnOverview(); return; }
 
+            login.open();
+            if (login.isVisible()) {
+                login.login(username, password);
+                if (overview.isVisible()) { landOnOverview(); return; }
+            }
+
+            // Fallback: register a fresh user
             String freshUser = username + "_" + System.currentTimeMillis();
             selfRegisterAndLogin(freshUser, password);
             if (overview.isVisible()) { landOnOverview(); return; }
             throw new IllegalStateException("Could not recover from internal error.");
         }
 
-        // 4) Unknown/blank/data: states -> try register with a fresh username
         if (url.startsWith("data:") || err == null || err.isBlank()) {
             String freshUser = username + "_" + System.currentTimeMillis();
             selfRegisterAndLogin(freshUser, password);
             if (overview.isVisible()) { landOnOverview(); return; }
         }
 
-        // 5) Give up with diagnostics
         throw new IllegalStateException("Could not log in to Parabank after self-heal. url=" + url + " err=" + err);
     }
 
@@ -94,7 +100,9 @@ public class ParabankAuth {
 
             String url = safeUrl();
             if (url.contains("/register.htm")) {
-                String rightPanel = BrowserUtil.safeGetText(getDriver(), By.cssSelector("#rightPanel")).toLowerCase();
+                String rightPanel = String.valueOf(
+                        BrowserUtil.safeGetText(getDriver(), By.cssSelector("#rightPanel"))
+                ).toLowerCase();
 
                 boolean usernameTaken =
                         rightPanel.contains("already") && rightPanel.contains("exist");
@@ -112,8 +120,16 @@ public class ParabankAuth {
             }
 
             if (url.endsWith("/index.htm")) {
-                login.login(username, password);
-                if (overview.isVisible()) { landOnOverview(); return; }
+                if (login.isVisible()) {
+                    login.login(username, password);
+                    if (overview.isVisible()) { landOnOverview(); return; }
+                } else {
+                    login.open();
+                    if (login.isVisible()) {
+                        login.login(username, password);
+                        if (overview.isVisible()) { landOnOverview(); return; }
+                    }
+                }
             }
 
             // If the site showed internal error, clean and retry with a fresh username.
@@ -126,7 +142,6 @@ public class ParabankAuth {
             BrowserUtil.sleep(700);
         }
 
-        // Final safety try: navigate to overview explicitly once more
         BrowserUtil.openPage("baseUrl.parabank", "overview.htm");
         if (overview.isVisible()) { landOnOverview(); return; }
 
