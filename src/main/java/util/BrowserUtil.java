@@ -11,13 +11,15 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static util.Driver.getDriver;
+
 public final class BrowserUtil {
 
     private BrowserUtil() {
     }
 
     private static WebDriver driver() {
-        return Driver.getDriver();
+        return getDriver();
     }
 
     /* ---------------------------
@@ -251,6 +253,15 @@ public final class BrowserUtil {
         try {
             return driver().findElement(by).isDisplayed();
         } catch (NoSuchElementException | StaleElementReferenceException e) {
+            return false;
+        }
+    }
+
+    public static boolean isPresent(By locator) {
+        try {
+            getDriver().findElement(locator);
+            return true;
+        } catch (NoSuchElementException e) {
             return false;
         }
     }
