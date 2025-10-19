@@ -172,6 +172,9 @@ public final class BrowserUtil {
         }
     }
 
+    /**
+     * Safe text getter.
+     */
     public static String safeGetText(WebDriver driver, By locator) {
         return driver.findElements(locator).isEmpty()
                 ? ""
@@ -193,6 +196,9 @@ public final class BrowserUtil {
         }
     }
 
+    /**
+     * Standard explicit visibility wait.
+     */
     public static WebElement waitForVisibility(By locator, int timeoutSec) {
         return new WebDriverWait(driver(), Duration.ofSeconds(timeoutSec))
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
@@ -243,6 +249,9 @@ public final class BrowserUtil {
         }
     }
 
+    /**
+     * Lightweight presence probe with timeout.
+     */
     public static boolean isPresent(By locator) {
         try {
             getDriver().findElement(locator);
