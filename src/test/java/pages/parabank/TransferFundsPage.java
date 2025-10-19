@@ -10,34 +10,40 @@ import java.util.List;
 import static util.Driver.getDriver;
 
 public class TransferFundsPage {
+    // Page object locators kept minimal and readable
     private static final By TITLE   = By.cssSelector("#rightPanel h1.title");
     private static final By AMOUNT  = By.id("amount");
     private static final By FROM    = By.id("fromAccountId");
     private static final By TO      = By.id("toAccountId");
     private static final By BTN_TRANSFER = By.cssSelector("input.button");
 
-    /** Open via left nav from Accounts Overview and wait until the form is truly ready. */
+    /** Navigates via left-nav and blocks until the form is interactable. */
     public void open() {
         new AccountsOverviewPage().goToTransferFunds();
 
-        // Strong readiness checks
+        // Defensive readiness checks to reduce flakiness on slower environments
         BrowserUtil.textContains(getDriver(), TITLE, "Transfer Funds", 12);
         BrowserUtil.waitForVisibility(FROM, 12);
         BrowserUtil.waitForVisibility(TO, 12);
         BrowserUtil.waitForVisibility(AMOUNT, 12);
     }
 
+    /**
+     * Submits a transfer.
+     * - Self-heals if invoked off-page.
+     * - Selects provided accounts when available; otherwise picks sensible defaults.
+     * - Ensures TO differs from FROM.
+     */
     public void transfer(String amount, String fromAccount, String toAccount) {
-        // If someone called transfer() directly, make sure controls exist.
+        // Lightweight self-heal: ensure the form is present
         if (!BrowserUtil.isPresent(AMOUNT)) {
-            // try to recover once: re-open the page via left nav
             open();
         }
 
         BrowserUtil.waitForVisibility(AMOUNT, 12);
         WebElement amountEl = getDriver().findElement(AMOUNT);
 
-        // bring into view (just in case)
+        // Keep interactions stable by bringing the field into view
         try {
             ((JavascriptExecutor) getDriver())
                     .executeScript("arguments[0].scrollIntoView({block:'center'});", amountEl);
@@ -52,7 +58,7 @@ public class TransferFundsPage {
         List<String> fromOptions = BrowserUtil.getAllSelectOptions(fromEl);
         List<String> toOptions   = BrowserUtil.getAllSelectOptions(toEl);
 
-        // FROM
+        // Source account: honor input when possible; otherwise use the first available
         if (fromOptions.contains(fromAccount)) {
             BrowserUtil.selectByVisibleText(fromEl, fromAccount);
         } else if (!fromOptions.isEmpty()) {
@@ -60,42 +66,45 @@ public class TransferFundsPage {
             fromAccount = BrowserUtil.getSelectedOption(fromEl);
         }
 
-        // TO (must differ from FROM)
+        // Destination account: must be present and different from the source
         String finalTo = toAccount;
         if (!toOptions.contains(finalTo) || finalTo.equals(fromAccount)) {
             String fromFinal = fromAccount;
             finalTo = toOptions.stream()
                     .filter(opt -> !opt.equals(fromFinal))
                     .findFirst()
-                    .orElse(fromAccount);
+                    .orElse(fromAccount); // graceful fallback if only one exists
         }
         BrowserUtil.selectByVisibleText(toEl, finalTo);
 
         getDriver().findElement(BTN_TRANSFER).click();
     }
 
+    /**
+     * Robust success detection.
+     * Prefers the H1 change, then falls back to confirmation text in the panel.
+     */
     public boolean isSuccessShown() {
-        // Title usually changes to “Transfer Complete!”
+        // Primary signal: page title update
         try {
             if (BrowserUtil.textContains(getDriver(),
                     By.cssSelector("#rightPanel h1.title"), "Transfer Complete", 8)) {
                 return true;
             }
-        } catch (Exception ignored) { /* fall through */ }
+        } catch (Exception ignored) { /* non-fatal; try fallback */ }
 
-        // Fallback: the confirmation paragraph always contains this text
+        // Fallback signal: confirmation paragraph
         By panel = By.id("rightPanel");
         try {
             if (BrowserUtil.textContains(getDriver(),
                     panel, "has been transferred", 10)) {
                 return true;
             }
-        } catch (Exception ignored) { /* fall through */ }
+        } catch (Exception ignored) { /* non-fatal; try last quick check */ }
 
-        // Last-chance quick check (handles minor timing blips)
+        // Final quick pass to cover minor timing gaps
         try {
-            return BrowserUtil.textContains(getDriver(),
-                    panel, "Transfer Complete", 2);
+            return BrowserUtil.textContains(getDriver(), panel, "Transfer Complete", 2);
         } catch (Exception ignored) {
             return false;
         }
