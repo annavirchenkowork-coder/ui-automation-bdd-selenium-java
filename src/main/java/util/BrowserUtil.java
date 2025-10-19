@@ -198,6 +198,24 @@ public final class BrowserUtil {
                 .until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
+    /**
+     * Waits until any one of the provided locators is visible and returns that element.
+     */
+    public static WebElement waitForAnyVisible(By[] locators, int timeoutSeconds) {
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(timeoutSeconds));
+        return wait.until(driver -> {
+            for (By by : locators) {
+                try {
+                    WebElement el = driver.findElement(by);
+                    if (el.isDisplayed()) return el;
+                } catch (NoSuchElementException | StaleElementReferenceException ignore) {
+                    // try next locator
+                }
+            }
+            return null; // keep waiting
+        });
+    }
+
     public static WebElement waitForClickability(By locator, int timeoutSec) {
         return new WebDriverWait(driver(), Duration.ofSeconds(timeoutSec))
                 .until(ExpectedConditions.elementToBeClickable(locator));
@@ -211,38 +229,6 @@ public final class BrowserUtil {
         ExpectedCondition<Boolean> jsLoad = d ->
                 "complete".equals(((JavascriptExecutor) d).executeScript("return document.readyState"));
         wait.until(jsLoad);
-    }
-
-    /**
-     * Wait for element reference to recover from staleness.
-     */
-    public static void waitForStaleRecovery(WebElement element, int timeoutSec) {
-        new WebDriverWait(driver(), Duration.ofSeconds(timeoutSec)).until(d -> {
-            try {
-                element.isEnabled();
-                return true;
-            } catch (StaleElementReferenceException e) {
-                return false;
-            }
-        });
-    }
-
-    /**
-     * Retry a normal Selenium click for up to timeoutSec seconds.
-     */
-    public static void clickWithRetry(WebElement element, int timeoutSec) {
-        long end = System.currentTimeMillis() + timeoutSec * 1000L;
-        WebDriverException last = null;
-        while (System.currentTimeMillis() < end) {
-            try {
-                element.click();
-                return;
-            } catch (WebDriverException e) {
-                last = e;
-                sleep(500);
-            }
-        }
-        if (last != null) throw last;
     }
 
     /* ---------------------------
