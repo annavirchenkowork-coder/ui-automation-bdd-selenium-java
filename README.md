@@ -18,24 +18,36 @@ src
 ├── main
 │   └── java
 │        └── util
-│             ├── Driver.java              # WebDriver manager (singleton)
-│             ├── ConfigurationReader.java # Reads config.properties
-│             └── BrowserUtil.java         # Common Selenium utilities
+│             ├── Driver.java                # WebDriver manager (singleton)
+│             ├── ConfigurationReader.java   # Reads config.properties
+│             └── BrowserUtil.java           # Common Selenium utilities
 │
 └── test
-├── java
-│    ├── pages   # Page Object Models
-│    ├── runner  # Test runners
-│    └── steps   # Step definitions
-│
-└── resources
-├── features            # Gherkin feature files
-│    ├── login_saucedemo.feature
-│    ├── sort_products_saucedemo.feature
-│    ├── books_cart.feature   # nopCommerce add-to-cart feature
-│
-├── config.properties
-└── junit-platform.properties
+    ├── java
+    │    ├── pages        # Page Object Models
+    │    ├── runner       # Test runners
+    │    └── steps        # Step definitions
+    │         ├── cura
+    │         ├── nop
+    │         ├── parabank
+    │         ├── sauce
+    │         └── Hooks
+    │
+    └── resources
+         ├── features                     # Gherkin feature files
+         │    ├── cura
+         │    │    └── appointment_booking.feature
+         │    ├── nop
+         │    │    └── books_cart.feature         # nopCommerce add-to-cart
+         │    ├── parabank
+         │    │    ├── bank_login.feature
+         │    │    └── transfter.feature          # Parabank fund transfer
+         │    └── sauce_demo
+         │         ├── login_saucedemo.feature
+         │         └── sort_products_saucedemo.feature
+         │
+         ├── config.properties
+         └── junit-platform.properties
 ```
 ---
 
@@ -61,9 +73,7 @@ src
 **Some of the currently automated flows:**
 - 🔐 **SauceDemo Login & Sorting**
 - 🛒 **nopCommerce Books – Add to Cart & Cart Validation** 
-- - 🏥 **CURA Appointment Booking**
-
-**Upcoming features (in progress 🚧):**
+- 🏥 **CURA Appointment Booking**
 - 🏦 **Parabank Login & Money Transfer**
 
 
