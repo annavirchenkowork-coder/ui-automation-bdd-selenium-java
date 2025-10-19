@@ -36,7 +36,7 @@ public class ParabankTransferSteps {
 
     @Then("the transfer confirmation page should show success")
     public void verify_success() {
-        Assertions.assertTrue(transfer.isSuccessShown(), "Transfer success message not visible.");
+        Assertions.assertTrue(transfer.isSuccessShown(), "Transfer success not detected in title or panel text.");
     }
 
     // --- helpers ---
