@@ -4,7 +4,13 @@ import org.openqa.selenium.By;
 import util.BrowserUtil;
 import static util.Driver.getDriver;
 
+/**
+ * Represents the Parabank registration page.
+ * Handles user registration flow used in test setup and auth scenarios.
+ */
 public class RegisterPage {
+
+    // Locators for all registration fields
     private static final By FIRST   = By.id("customer.firstName");
     private static final By LAST    = By.id("customer.lastName");
     private static final By ADDRESS = By.id("customer.address.street");
@@ -19,16 +25,21 @@ public class RegisterPage {
     private static final By BTN     = By.cssSelector("input.button[value='Register']");
     private static final By SUCCESS = By.cssSelector("#rightPanel h1.title"); // usually "Welcome"
 
+    /** Opens the registration page and waits until the form is ready. */
     public void open() {
         getDriver().get(util.ConfigurationReader.getProperty("baseUrl.parabank") + "register.htm");
         BrowserUtil.waitForVisibility(USER, 8);
     }
 
+    /** Registers a user using the minimal required fields. */
     public void register(String username, String password) {
         registerMinimal(username, password);
     }
 
-    /** Used by the self-healing flow. Clears inputs, fills, submits, and waits briefly. */
+    /**
+     * Fills out all required fields with placeholder data and submits the form.
+     * Commonly used for auto-registration during setup or recovery flows.
+     */
     public void registerMinimal(String username, String password) {
         type(FIRST,   "Auto");
         type(LAST,    "User");
@@ -44,10 +55,12 @@ public class RegisterPage {
 
         getDriver().findElement(BTN).click();
 
+        // Short wait to stabilize UI transition
         BrowserUtil.sleep(750);
-        BrowserUtil.textContains(getDriver(), SUCCESS, "welcome", 3); // soft wait; result ignored
+        BrowserUtil.textContains(getDriver(), SUCCESS, "welcome", 3); // soft verification
     }
 
+    /** Helper method to clear and fill a text input. */
     private void type(By locator, String value) {
         var el = getDriver().findElement(locator);
         el.clear();
