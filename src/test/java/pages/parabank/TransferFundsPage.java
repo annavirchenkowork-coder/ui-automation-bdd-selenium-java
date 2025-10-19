@@ -75,6 +75,29 @@ public class TransferFundsPage {
     }
 
     public boolean isSuccessShown() {
-        return BrowserUtil.textContains(getDriver(), TITLE, "Transfer Complete!", 12);
+        // Title usually changes to “Transfer Complete!”
+        try {
+            if (BrowserUtil.textContains(getDriver(),
+                    By.cssSelector("#rightPanel h1.title"), "Transfer Complete", 8)) {
+                return true;
+            }
+        } catch (Exception ignored) { /* fall through */ }
+
+        // Fallback: the confirmation paragraph always contains this text
+        By panel = By.id("rightPanel");
+        try {
+            if (BrowserUtil.textContains(getDriver(),
+                    panel, "has been transferred", 10)) {
+                return true;
+            }
+        } catch (Exception ignored) { /* fall through */ }
+
+        // Last-chance quick check (handles minor timing blips)
+        try {
+            return BrowserUtil.textContains(getDriver(),
+                    panel, "Transfer Complete", 2);
+        } catch (Exception ignored) {
+            return false;
+        }
     }
 }
